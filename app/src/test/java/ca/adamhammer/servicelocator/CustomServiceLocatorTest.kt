@@ -8,26 +8,10 @@ class CustomServiceLocatorTest {
     @Before
     fun setup() {
         //This initializes by class name
-        ServiceLocator.initializer = object : ServiceInitializer {
-            val serviceMap = mapOf<Class<*>, ()->Any>(
-                iA::class.java to { provideClassA() },
-                iB::class.java to {  cB("Class B")  }
-            )
-
-            //Can have functions to generate classes
-            fun provideClassA() : cA {
-                return cA("Class A")
-            }
-
-            override fun <T> getInstance(_class: Class<T>): T {
-                val initFunction = serviceMap[_class]
-                if (initFunction != null) {
-                    return initFunction() as T
-                }
-
-                return DefaultServiceInitializer.getInstance(_class)
-            }
-        }
+        ServiceLocator.initializer = MapServiceInitializer(mapOf(
+            iA::class.java to {  cA("Class A") },
+            iB::class.java to {  cB("Class B") }
+        ))
     }
 
     @Test
@@ -94,8 +78,5 @@ class CustomServiceLocatorTest {
             System.out.println("Invoking for Concrete no-args class")
         }
     }
-
-
-
 }
 
