@@ -27,26 +27,28 @@ object ServiceLocator {
     }
 
 
+    /**
+     * Gets a class, initializes if necessary
+     */
     fun <T> get(_class: Class<T>): T {
         if (!serviceMap.containsKey(_class)) {
             serviceMap[_class] = initializer.getInstance(_class)
         }
         return serviceMap[_class] as T
     }
-
 }
 
-//Default with no-arg services only
-//Creates a new class all the time
-//Can delegate to this as a fallback
-object DefaultServiceInitializer : ServiceInitializer {
-    override fun <T>getInstance(_class: Class<T>): T = _class.newInstance()
-}
-
-//We can extend this interface to use interface/custom constructors
-//If you delegate to the default, you can fall back to the no-args
+/**
+ * A service initializer
+ *
+ * Gets an instance of _class when asked (Creates/Forwards)
+ */
 interface ServiceInitializer {
     fun <T> getInstance(_class: Class<T>): T
+}
+
+object DefaultServiceInitializer : ServiceInitializer {
+    override fun <T>getInstance(_class: Class<T>): T = _class.newInstance()
 }
 
 /**
